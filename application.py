@@ -1,12 +1,13 @@
 import os
 import requests
 
-from flask import Flask, session
+from flask import Flask,render_template,flash,url_for,session, logging,request
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI']= 'postgres://xheausojwaqqkz:1960ab72edccd1494a5c286a7d270b3c33ee82af85d9abb2e135bb91e7440202@ec2-34-197-212-240.compute-1.amazonaws.com:5432/dait7qu0pcaeop'
 
 # Check for environment variable
 if not os.getenv("DATABASE_URL"):
@@ -24,7 +25,4 @@ db = scoped_session(sessionmaker(bind=engine))
 
 @app.route("/")
 def index():
-    return "Project 1: TODO"
-
-res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "PntQoVaB2YSKLpy9P0RGug", "isbns": "9781632168146"})
-print(res.json())
+    return render_template("templates/index.html")
