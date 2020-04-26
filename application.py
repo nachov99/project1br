@@ -7,7 +7,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI']= 'postgres://xheausojwaqqkz:1960ab72edccd1494a5c286a7d270b3c33ee82af85d9abb2e135bb91e7440202@ec2-34-197-212-240.compute-1.amazonaws.com:5432/dait7qu0pcaeop'
 
 # Check for environment variable
 if not os.getenv("DATABASE_URL"):
