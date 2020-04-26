@@ -1,12 +1,15 @@
 {% extends "layout.html" %}
 
 {% block heading %}
-  Login - Register
+  Project1
 {% endblock %}
 
 {% block body %}
 
     <form action="login.html" method="post">
-      <button type="button" name="button">Login</button>
+      <button type="button" name="button"><a href="/login">Login</a></button>
+    </form>
+    <form action="register.html" method="post">
+      <button type="button" name="button"><a href="/register">Register</a></button>
     </form>
 {% endblock %}
