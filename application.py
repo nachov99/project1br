@@ -1,12 +1,9 @@
-import os
-
-from flask import Flask, session, request, render_template
-from flask_session.__init__ import Session
+import os, json
+from flask import Flask, session, request, render_template, jsonify, flash, redirect, url_for
+from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 
-
-from passlib.hash import sha256_crypt
 app = Flask(__name__)
 
 # Check for environment variable
@@ -19,7 +16,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Set up database
-engine = create_engine(os.getenv("DATABASE_URL"))
+engine = create_engine(os.getenv("DATABASE_URL"),encoding="utf8")
 db = scoped_session(sessionmaker(bind=engine))
 
 @app.route("/")
@@ -31,23 +28,17 @@ def index():
 def register():
     if request.method=='POST':
         username=request.form.get('username')
+        email = request.form.get('email')
         password=request.form.get('password')
-        confirm=request.form.get('confirm')
-        secure_password=sha256_crypt.encrypt(str(password))
-
-        usernamedata=db.execute("SELECT username FROM users WHERE  username=:username",{"username":username}).fetchone()
-        if usernamedata==None:
-            if password==confirm:
-                db.execute("INSERT INTO users(username,password) VALUES(:username,:password)",
-                {"username":username,"password":secure_password})
-                db.commit()
-                flash('You are registered and can now login','success')
-                return redirect(url_for('login'))
-            else:
-                flash('password does not match','danger')
-                return render_template('register.html')
-        else:
-            flash('user already existed, please login or contact admin','danger')
-            return redirect(url_for('login'))
-
+        db.execute("INSERT INTO user (username, email, password) VALUES ( :username, :email, :password)",
+                    {"username": username, "email": email,"password": password})
+        db.commit()
+        #example = db.execute("SELECT * FROM user").fetchall()
+        #print(example)
+        flash('Registration successful')
+        return redirect(url_for('index'))
     return render_template('register.html')
+
+
+if __name__ == "__main__":
+    app.run(debug=True)

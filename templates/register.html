@@ -7,9 +7,13 @@
 {% block body %}
 
     <form method="post">
-      <input type="text" name="username" placeholder="username" id="username">
-      <input type="password" name="password" placeholder="Password" id="password">
-      <button type="submit" name="button">Register</button>
+      <label for="email">Username : </label>
+      <input type="text" name="username" id="username">
+      <label for="email">Email : </label>
+      <input type="email" name="email" id="email">
+      <label for="email">Password : </label>
+      <input type="password" name="password" id="password">
+      <button type="submit">Register</button>
     </form>
 
 {% endblock %}
