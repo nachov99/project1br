@@ -1,9 +1,10 @@
 import os, json
-from flask import Flask, session, request, render_template, jsonify, flash, redirect, url_for, login
+from flask import Flask, session, request, render_template, jsonify, flash, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from flas_login import UserMixin
 
 app = Flask(__name__)
 
@@ -40,7 +41,7 @@ def register():
         userverify = db.execute("SELECT * from users where username LIKE :username",
                         {'username': request.form.get('username')}).fetchone()
         if userverify:
-            return redirect("error.html", message='Please enter a valid username')
+            return render_template("error.html", message='Please enter a valid username')
 
         #Hash user password
         hashPssw = generate_password_hash(request.form.get('password'), method='pbkdf2:sha256', salt_length=8)
@@ -48,24 +49,18 @@ def register():
         #Insert user data in database
         db.execute("INSERT INTO users (username, email, password) VALUES (:username, :email, :password)",
                     {"username": username, "email": email, "password": hashPssw})
-        db.session.add(new_user)
         db.commit()
 
         flash('Registration successful')
         return redirect(url_for('login'))
     return render_template('register.html')
 
+#LOGIN FORM
 @app.route("/login", methods=['GET','POST'])
 
 
 def login():
     if request.method=='POST':
-
-        login_manager = LoginManager()
-        loginmanager.init_app(app)
-
-
-
 
         #Request for user data
         username=request.form.get('username')
@@ -79,17 +74,11 @@ def login():
         elif not request.form.get('password'):
             return render_template('error.html', message='Please enter a password')
 
-        #Search in the database for the username and Password
-        #resultUNAME = db.execute('SELECT username, password FROM users WHERE username LIKE :username AND password LIKE :password',
-        #                    {'username': username, 'password': password})
-        #resultPSSW = db.execute('SELECT password FROM users WHERE password LIKE :password',
-        #                    {'password': password})
-        #if resultUNAME == username and resultPSSW == password:
-        #    return render_template('error.html', message='Valid user data')
-        #else:
-        #    return render_template('error.html', message='User data incorrect')
+        chekuser = db.execute("SELECT * from users where username LIKE :username",
+                        {'username': request.form.get('username')}).first()
 
-        #Using Flask-login
+        if not user or not check_password_hash(user.password, password):
+            return render_template('error.html', message='Please check your login details and try again.')
 
     return render_template('login.html')
 
