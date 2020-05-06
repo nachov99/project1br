@@ -1,5 +1,6 @@
 import os, json
 from flask import Flask, session, request, render_template, jsonify, flash, redirect, url_for, login
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -35,13 +36,23 @@ def register():
         email = request.form.get('email')
         password=request.form.get('password')
 
+        #If this returns a user, then the username already exists in database
+        userverify = db.execute("SELECT * from users where username LIKE :username",
+                        {'username': request.form.get('username')}).fetchone()
+        if userverify:
+            return redirect("error.html", message='Please enter a valid username')
+
+        #Hash user password
+        hashPssw = generate_password_hash(request.form.get('password'), method='pbkdf2:sha256', salt_length=8)
+
         #Insert user data in database
         db.execute("INSERT INTO users (username, email, password) VALUES (:username, :email, :password)",
-                    {"username": username, "email": email, "password": password})
+                    {"username": username, "email": email, "password": hashPssw})
+        db.session.add(new_user)
         db.commit()
 
         flash('Registration successful')
-        return redirect(url_for('index'))
+        return redirect(url_for('login'))
     return render_template('register.html')
 
 @app.route("/login", methods=['GET','POST'])
