@@ -5,7 +5,7 @@ from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 import requests
-from flask_login import login_required
+from logreq import login_required
 
 app = Flask(__name__)
 
@@ -13,7 +13,6 @@ app = Flask(__name__)
 #if not os.getenv("DATABASE_URL"):
 #    raise RuntimeError("DATABASE_URL is not set")
 #app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://pckgaxnrveaneq:b95fe71a9ca8dfb956cf64e39a0a791951436d4ee3235f563325d284fdfddb7e@ec2-52-86-73-86.compute-1.amazonaws.com:5432/dacuqeovgq7jhr'
-
 
 # Configure session to use filesystem
 app.config["SESSION_PERMANENT"] = False
@@ -28,6 +27,13 @@ db = scoped_session(sessionmaker(bind=engine))
 @app.route("/")
 def index():
     return render_template("index.html")
+
+@app.route("/home")
+@login_required
+def home():
+    """ Show search box """
+
+    return render_template("home.html")
 
 #REGISTER FORM
 @app.route("/register", methods=['GET','POST'])
@@ -101,7 +107,7 @@ def login():
 
         #Redirect user to home page
         return render_template('home.html')
-    else:
+    elif request.method=='GET':
         return render_template("login.html")
 
 @app.route("/logout")
@@ -114,13 +120,37 @@ def logout():
     # Redirect user to login form
     return redirect("/")
 
-@app.route("/")
+
+#SEARCH BOX
+@app.route("/search", methods=["GET"])
 @login_required
-def home():
-    """ Show search box """
+def search():
 
-    return render_template("home.html")
+    #Ensure if a book was provided
+    if not request.args.get("book"):
+        return render_template("error.html", message="you must provide a book.")
 
+    # Take input and add a wildcard
+    query = "%" + request.args.get("book") + "%"
+
+    # Capitalize all words of input for search
+    # https://docs.python.org/3.7/library/stdtypes.html?highlight=title#str.title
+    query = query.title()
+
+    rows = db.execute("SELECT isbn, title, author, year FROM books WHERE \
+                        isbn LIKE :query OR \
+                        title LIKE :query OR \
+                        author LIKE :query LIMIT 15",
+                        {"query": query})
+
+    # Books not founded
+    if rows.rowcount == 0:
+        return render_template("error.html", message="we can't find books with that description.")
+
+    # Fetch all the results
+    books = rows.fetchall()
+
+    return render_template("results.html", books=books)
 
 if __name__ == "__main__":
     app.run(debug=True)
