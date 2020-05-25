@@ -12,7 +12,6 @@ app = Flask(__name__)
 # Check for environment variable
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
-#app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://pckgaxnrveaneq:b95fe71a9ca8dfb956cf64e39a0a791951436d4ee3235f563325d284fdfddb7e@ec2-52-86-73-86.compute-1.amazonaws.com:5432/dacuqeovgq7jhr'
 
 # Configure session to use filesystem
 app.config["SESSION_PERMANENT"] = False
@@ -21,7 +20,6 @@ Session(app)
 
 # Set up database
 engine = create_engine(os.getenv("DATABASE_URL"),encoding="utf8")
-#engine = create_engine('postgres://pckgaxnrveaneq:b95fe71a9ca8dfb956cf64e39a0a791951436d4ee3235f563325d284fdfddb7e@ec2-52-86-73-86.compute-1.amazonaws.com:5432/dacuqeovgq7jhr')
 db = scoped_session(sessionmaker(bind=engine))
 
 @app.route("/")
@@ -70,6 +68,7 @@ def register():
                     {"username": username, "email": email, "password": hashPssw})
         db.commit()
 
+        def login():
         flash('Registration successful')
         return redirect(url_for('login'))
     else:
@@ -77,7 +76,6 @@ def register():
 
 #LOGIN FORM
 @app.route("/login", methods=['GET','POST'])
-def login():
 
     #Forget any user_id
     session.clear()
@@ -201,7 +199,6 @@ def book(isbn):
 
         # Read API key from env variable
         key = os.getenv("GOODREADS_KEY")
-        #key = 'PntQoVaB2YSKLpy9P0RGug'
 
         # Query the api with key and ISBN as parameters
         query = requests.get("https://www.goodreads.com/book/review_counts.json",
