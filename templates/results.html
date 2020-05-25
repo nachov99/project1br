@@ -1,9 +1,5 @@
 {% extends "layout.html" %}
 
-{% block heading %}
-  Project1
-{% endblock %}
-
 {% block body %}
 
 <h3>Search Results</h3>
@@ -12,17 +8,17 @@
 <div class="container results-container">
 
     {% for book in books %}
-        <div class="card border-primary mb-3" style="width: 12rem">
-            <div class="card-body">
-                <h4 class="card-title">{{book['title']}}</h4>
-                <h6 class="card-text">{{book['author']}}</h6>
-                <h6 class="card-text">{{book['year']}}</h6>
-                <h6 class="card-text">{{book['isbn']}}</h6>
-            </div>
-            <div class="card-footer">
-                <a href="/book/{{book['isbn']}}" class="card-link">Go to book page</a>
-            </div>
-        </div>
+        <div class="card">
+  <div class="card-header">
+    {{book['isbn']}}
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">{{book['title']}}</h5>
+    <p class="card-text">{{book['author']}}</p>
+    <p class="card-text">{{book['year']}}</p>
+    <a href="/book/{{book['isbn']}}" class="btn btn-primary">See reviews</a>
+  </div>
+</div>
     {% endfor %}
 </div>
 
