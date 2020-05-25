@@ -237,7 +237,7 @@ def book(isbn):
 #API
 @app.route("/api/book/<book_id>", methods = ["GET"])
 def book_api(book_id):
-    """Return details about a single book review."""
+
     # Make sure book review exists
     results = db.execute("SELECT * FROM reviews WHERE book_id = :book_id",
                         {"book_id": book_id})
@@ -245,17 +245,15 @@ def book_api(book_id):
     if review is None:
         return jsonify({"error": "Invalid isbn"}), 422
 
-    #Get all reviews from that book
-    reviews = db.execute("SELECT user_id, book_id, comment, rating FROM reviews WHERE book_id = :book_id",
-                        {"book_id": book_id})
-    row = reviews.fetchall()
+    #Get review info from that book
+    reviews = db.execute("SELECT title, author, year, COUNT(reviews.rating) as review_count, AVG(CAST(reviews.rating AS INT)) as average_score FROM books INNER JOIN reviews ON isbn = book_id WHERE book_id = :book_id GROUP BY title, author, year, isbn",
+                        {"book_id": book_id}).fetchone()
     return jsonify({
-            "user": row.user_id,
-            "isbn": row.book_id,
-            "comment": row.comments,
-            "rating": row.rating
+            "title": reviews.title,
+            "author": reviews.author,
+            "year": reviews.year,
+            "review_count": reviews.review_count,
+            "average_score": reviews.average_score
         })
-
-
 if __name__ == "__main__":
     app.run(debug=True)
