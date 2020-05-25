@@ -1,15 +1,20 @@
 {% extends "layout.html" %}
 
 {% block heading %}
-  Login
+
 {% endblock %}
 
 {% block body %}
-
-    <form method="post">
-      <input type="text" name="username" placeholder="text" id="username">
-      <input type="password" name="password" placeholder="Password" id="password">
-      <button type="submit" name="button">Login</button>
-    </form>
-
+<form method="post">
+  <div class="form-group">
+    <label for="exampleInputEmail1">Username</label>
+    <input type="text" class="form-control" id="username" name='username'aria-describedby="emailHelp">
+  </div>
+  <div class="form-group">
+    <label for="exampleInputPassword1">Password</label>
+    <input type="password" class="form-control" id="password" name="password">
+  </div>
+  <p><a href="/register">Register</a></p>
+  <button type="submit" class="btn btn-primary">Login</button>
+</form>
 {% endblock %}

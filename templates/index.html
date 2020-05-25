@@ -1,16 +1,11 @@
 {% extends "layout.html" %}
-
-{% block heading %}
-  Project1
-{% endblock %}
-
 {% block body %}
-  <div class="index">
-    <form action="login.html" method="post">
-      <button type="button" name="button"><a href="/login">Login</a></button>
-    </form>
-    <form action="register.html" method="post">
-      <button type="button" name="button"><a href="/register">Register</a></button>
-    </form>
-  </div>
+<div class="container">
+  <form class="loginregister" action="login.html" method="post">
+    <a href="/login"><button type="button" name="button" class="btn btn-primary">Login</button></a>
+  </form>
+  <form action="register.html" method="post">
+    <a href="/register"><button type="button" name="button" class="btn btn-primary">Register</button></a>
+  </form>
+</div>
 {% endblock %}
