@@ -68,18 +68,17 @@ def register():
                     {"username": username, "email": email, "password": hashPssw})
         db.commit()
 
-        def login():
-        flash('Registration successful')
+        #def login():
+        #flash('Registration successful')
         return redirect(url_for('login'))
     else:
         return render_template("register.html")
 
 #LOGIN FORM
 @app.route("/login", methods=['GET','POST'])
-
+def login():
     #Forget any user_id
     session.clear()
-
     if request.method=='POST':
 
         #Request for user data
